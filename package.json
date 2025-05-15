@@ -26,11 +26,11 @@
     "postinstall": "husky"
   },
   "lint-staged": {
-    "**/*.(js|ts|jsx|tsx)": [
+    "**/*.{js,ts}": [
       "prettier --write",
       "eslint --fix"
     ],
-    "**/*.(json|css|md|mjs|txt)": [
+    "**/*.{json,md,mjs,prisma,yaml,yml}": [
       "prettier --write"
     ]
   },
