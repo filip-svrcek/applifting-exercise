@@ -3,7 +3,7 @@ import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { AuthInputDto } from './dto/auth-input.dto';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from 'src/common/types/jwt-payload.interface';
+import { JwtPayload } from 'src/auth/types/jwt-payload.interface';
 interface SignInData {
   id: number;
   login: string;
