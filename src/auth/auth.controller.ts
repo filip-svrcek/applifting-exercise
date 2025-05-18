@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { AuthInputDto } from './dto/auth-input.dto';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -7,7 +7,6 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @HttpCode(HttpStatus.OK)
   @Post('login')
   @ApiOperation({ summary: 'User sign in' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Returns token' })

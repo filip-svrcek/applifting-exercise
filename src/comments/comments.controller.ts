@@ -38,11 +38,12 @@ export class CommentsController {
   }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Creates a new comment to an article' })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: HttpStatus.CREATED,
     description: 'Returns the created comment',
     type: CommentResponseDto,
   })

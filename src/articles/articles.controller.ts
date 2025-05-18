@@ -44,11 +44,12 @@ export class ArticlesController {
   }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Creates an article' })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: HttpStatus.CREATED,
     description: 'Returns created article',
     type: ArticleResponseDto,
   })
