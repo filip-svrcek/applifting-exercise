@@ -30,6 +30,7 @@ model Article {
 model Comment {
   id        Int      @id @default(autoincrement())
   content   String
+  isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   authorId  Int
   author    User     @relation(fields: [authorId], references: [id])
