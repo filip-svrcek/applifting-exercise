@@ -1,13 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
-import { AuthInput } from './dto/auth-input.dto';
+import { AuthInputDto } from './dto/auth-input.dto';
 import { JwtService } from '@nestjs/jwt';
-
-type SignInData = {
+import { JwtPayload } from 'src/common/types/jwt-payload.interface';
+interface SignInData {
   id: number;
   login: string;
-};
+}
 @Injectable()
 export class AuthService {
   constructor(
@@ -15,7 +15,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(input: AuthInput): Promise<SignInData | null> {
+  async validateUser(input: AuthInputDto): Promise<SignInData | null> {
     const { login, password } = input;
     const user = await this.usersService.findUserByLogin(login);
     if (user && (await bcrypt.compare(password, user.password))) {
@@ -25,7 +25,7 @@ export class AuthService {
   }
 
   signIn(user: SignInData) {
-    const tokenPayload = { sub: user.id, login: user.login };
+    const tokenPayload: JwtPayload = { sub: user.id, login: user.login };
     const accessToken = this.jwtService.sign(tokenPayload);
     return {
       accessToken,
@@ -33,7 +33,7 @@ export class AuthService {
     };
   }
 
-  async authenticate(input: AuthInput) {
+  async authenticate(input: AuthInputDto) {
     const validatedUser = await this.validateUser(input);
     if (!validatedUser) {
       throw new UnauthorizedException();

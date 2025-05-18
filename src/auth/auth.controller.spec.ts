@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { AuthInput } from './dto/auth-input.dto';
+import { AuthInputDto } from './dto/auth-input.dto';
 
 describe('AuthController', () => {
   let authController: AuthController;
@@ -32,7 +32,7 @@ describe('AuthController', () => {
 
   describe('login', () => {
     it('should call authService.authenticate with correct parameters and return its result', async () => {
-      const authInput: AuthInput = { login: 'testuser', password: 'testpass' };
+      const authInput: AuthInputDto = { login: 'testuser', password: 'testpass' };
       const expectedResult = { accessToken: 'mock_token' };
 
       mockAuthService.authenticate.mockResolvedValue(expectedResult);
