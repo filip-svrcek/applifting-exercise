@@ -15,6 +15,9 @@ export class CommentsService {
       orderBy: {
         createdAt: 'desc',
       },
+      include: {
+        votes: true,
+      },
     });
   }
 
@@ -42,7 +45,7 @@ export class CommentsService {
     }
 
     const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
-    const isEditable = comment.createdAt > oneMinuteAgo || !comment.isDeleted;
+    const isEditable = comment.createdAt > oneMinuteAgo && !comment.isDeleted;
 
     if (!isEditable) {
       throw new ForbiddenException('This comment can no longer be updated');
@@ -69,7 +72,7 @@ export class CommentsService {
       throw new ForbiddenException('You are not allowed to delete this comment');
     }
 
-    await this.prisma.comment.update({
+    return this.prisma.comment.update({
       where: { id },
       data: {
         content: 'This comment has been deleted by the author',

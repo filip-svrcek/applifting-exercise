@@ -29,13 +29,23 @@ describe('CommentsService', () => {
 
   describe('findAllForArticle', () => {
     it('should return all comments for a given article', async () => {
-      const comments = [{ id: 1, content: 'test', articleId: 1 }];
+      const comments = [
+        {
+          id: 1,
+          content: 'test',
+          articleId: 1,
+          votes: [{ id: 1, isUpvote: false, ipAddress: '192.168.0.1' }],
+        },
+      ];
       mockPrisma.comment.findMany.mockResolvedValue(comments);
 
       const result = await service.findAllForArticle(1);
       expect(mockPrisma.comment.findMany).toHaveBeenCalledWith({
         where: { articleId: 1 },
         orderBy: { createdAt: 'desc' },
+        include: {
+          votes: true,
+        },
       });
       expect(result).toBe(comments);
     });

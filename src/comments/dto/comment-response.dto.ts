@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { VoteResponseDto } from 'src/votes/dto/vote-response.dto';
 
 export class CommentResponseDto {
   @ApiProperty({ example: 1, description: 'ID of the comment' })
@@ -18,4 +19,10 @@ export class CommentResponseDto {
 
   @ApiProperty({ example: false, description: 'Whether the comment is deleted' })
   isDeleted: boolean;
+
+  @ApiProperty({
+    type: () => [VoteResponseDto],
+    description: 'Vote count for the comment',
+  })
+  votes: [VoteResponseDto];
 }
