@@ -14,12 +14,11 @@ import {
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { RequestWithUser } from 'src/common/types/request-with-user.interface';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { ArticleResponseDto } from './dto/article-response.dto';
 
-@ApiTags('articles')
 @Controller('articles')
 export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
