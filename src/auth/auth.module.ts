@@ -13,6 +13,7 @@ import { JwtModule } from '@nestjs/jwt';
       global: true,
     }),
   ],
+  exports: [AuthService],
   providers: [AuthService],
   controllers: [AuthController],
 })
