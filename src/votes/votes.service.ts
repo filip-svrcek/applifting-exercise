@@ -26,6 +26,7 @@ export class VotesService {
       if (isPrismaError(error) && error.code === 'P2002') {
         throw new ConflictException('This IP has already voted on this comment');
       }
+      console.error('Error creating vote:', error);
       throw error;
     }
   }
