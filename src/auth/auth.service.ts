@@ -40,4 +40,14 @@ export class AuthService {
     }
     return this.signIn(validatedUser);
   }
+
+  verifyToken(token: string): JwtPayload {
+    try {
+      const payload: JwtPayload = this.jwtService.verify(token);
+      return payload;
+    } catch (error) {
+      console.error('Token verification failed:', error);
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
 }
