@@ -84,7 +84,6 @@ describe('AuthService', () => {
 
       expect(result).toEqual({
         accessToken: 'mocked-jwt-token',
-        login: 'testuser',
       });
     });
 
@@ -94,7 +93,6 @@ describe('AuthService', () => {
 
         expect(result).toEqual({
           accessToken: 'mocked-jwt-token',
-          login: 'testuser',
         });
         expect(jwtService.sign).toHaveBeenCalledWith({ sub: 1, login: 'testuser' });
       });

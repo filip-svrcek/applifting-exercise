@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { AuthInputDto } from './dto/auth-input.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from 'src/auth/types/jwt-payload.interface';
+import { AuthResponseDto } from './dto/auth-response.dto';
 interface SignInData {
   id: number;
   login: string;
@@ -24,16 +25,15 @@ export class AuthService {
     return null;
   }
 
-  signIn(user: SignInData) {
+  signIn(user: SignInData): AuthResponseDto {
     const tokenPayload: JwtPayload = { sub: user.id, login: user.login };
     const accessToken = this.jwtService.sign(tokenPayload);
     return {
       accessToken,
-      login: user.login,
     };
   }
 
-  async authenticate(input: AuthInputDto) {
+  async authenticate(input: AuthInputDto): Promise<AuthResponseDto> {
     const validatedUser = await this.validateUser(input);
     if (!validatedUser) {
       throw new UnauthorizedException();
