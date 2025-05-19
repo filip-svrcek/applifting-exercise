@@ -58,6 +58,7 @@ cp .env.example .env
 ```bash
 # Build, start and seed database
 yarn start:db
+yarn migrate
 yarn seed
 ```
 
@@ -77,14 +78,10 @@ yarn test
 yarn test:e2e # not exhaustive coverage, just a showcase
 ```
 
----
-
 ## 📘 API Documentation
 
 - REST API is available at:  
   **`/api`** → Swagger UI
-
----
 
 ## 📂 Seeded User
 
