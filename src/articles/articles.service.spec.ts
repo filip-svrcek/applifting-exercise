@@ -3,7 +3,6 @@ import { ArticlesService } from './articles.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CreateArticleDto } from './dto/create-article.dto';
-import { UpdateArticleDto } from './dto/update-article.dto';
 
 describe('ArticlesService', () => {
   let service: ArticlesService;
@@ -86,8 +85,7 @@ describe('ArticlesService', () => {
 
   describe('update', () => {
     it('should update and return the article if user is the author', async () => {
-      const dto: UpdateArticleDto = {
-        id: 1,
+      const dto: CreateArticleDto = {
         title: 'Updated title',
         perex: 'Updated leading parahraph',
         content: 'Updated content',
@@ -109,7 +107,6 @@ describe('ArticlesService', () => {
         service.update(
           1,
           {
-            id: 1,
             title: 'Updated title',
             perex: 'Updated leading parahraph',
             content: 'Updated content',
@@ -127,7 +124,6 @@ describe('ArticlesService', () => {
         service.update(
           1,
           {
-            id: 1,
             title: 'Updated title',
             perex: 'Updated leading parahraph',
             content: 'Updated content',

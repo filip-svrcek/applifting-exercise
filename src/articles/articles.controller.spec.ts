@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ArticlesController } from './articles.controller';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
-import { UpdateArticleDto } from './dto/update-article.dto';
 import { RequestWithUser } from 'src/common/types/request-with-user.interface';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 
@@ -69,8 +68,7 @@ describe('ArticlesController', () => {
 
   describe('update', () => {
     it('should update and return the article', async () => {
-      const dto: UpdateArticleDto = {
-        id: 1,
+      const dto: CreateArticleDto = {
         title: 'Updated Title',
         perex: 'Updated Perex',
         content: 'Updated Content',

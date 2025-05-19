@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
-import { UpdateArticleDto } from './dto/update-article.dto';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { RequestWithUser } from 'src/common/types/request-with-user.interface';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
@@ -26,7 +25,7 @@ export class ArticlesController {
   @Get()
   @ApiOperation({ summary: 'Gets all articles' })
   @ApiResponse({ status: HttpStatus.OK, type: [ArticleResponseDto] })
-  async findAll() {
+  async findAll(): Promise<ArticleResponseDto[]> {
     return this.articlesService.findAll();
   }
 
@@ -39,7 +38,7 @@ export class ArticlesController {
     description: 'Id of the article',
   })
   @ApiResponse({ status: HttpStatus.OK, type: ArticleResponseDto })
-  async findOne(@Param('id') id: number) {
+  async findOne(@Param('id') id: number): Promise<ArticleResponseDto> {
     return this.articlesService.findOne(id);
   }
 
@@ -53,7 +52,10 @@ export class ArticlesController {
     description: 'Returns created article',
     type: ArticleResponseDto,
   })
-  async create(@Body() dto: CreateArticleDto, @Req() req: RequestWithUser) {
+  async create(
+    @Body() dto: CreateArticleDto,
+    @Req() req: RequestWithUser,
+  ): Promise<ArticleResponseDto> {
     return this.articlesService.create(dto, req.user.userId);
   }
 
@@ -74,9 +76,9 @@ export class ArticlesController {
   })
   async update(
     @Param('id') id: number,
-    @Body() dto: UpdateArticleDto,
+    @Body() dto: CreateArticleDto,
     @Req() req: RequestWithUser,
-  ) {
+  ): Promise<ArticleResponseDto> {
     return this.articlesService.update(id, dto, req.user.userId);
   }
 
@@ -92,7 +94,7 @@ export class ArticlesController {
     description: 'Id of the article',
   })
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
-  async remove(@Param('id') id: number, @Req() req: RequestWithUser) {
+  async remove(@Param('id') id: number, @Req() req: RequestWithUser): Promise<void> {
     await this.articlesService.remove(id, req.user.userId);
   }
 }

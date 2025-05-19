@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateArticleDto } from './dto/create-article.dto';
-import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Injectable()
 export class ArticlesService {
@@ -34,7 +33,7 @@ export class ArticlesService {
     });
   }
 
-  async update(id: number, dto: UpdateArticleDto, userId: number) {
+  async update(id: number, dto: CreateArticleDto, userId: number) {
     const existing = await this.prisma.article.findUnique({ where: { id } });
 
     if (!existing) {
