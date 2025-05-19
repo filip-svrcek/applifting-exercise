@@ -23,7 +23,7 @@ export class VotesController {
   @Get('comment/:commentId')
   @ApiOperation({ summary: 'Gets vote counts for a comment' })
   @ApiResponse({ status: HttpStatus.OK, type: VoteResponseDto })
-  async countVotes(@Param('commentId') commentId: number) {
+  async countVotes(@Param('commentId') commentId: number): Promise<VoteResponseDto> {
     return this.votesService.countVotes(commentId);
   }
 }

@@ -2,13 +2,15 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { CommentWithVotesResponseDto } from './dto/comment-with-votes-response.dto';
+import { CommentResponseDto } from './dto/comment-response.dto';
 
 @Injectable()
 export class CommentsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAllForArticle(articleId: number) {
-    return this.prisma.comment.findMany({
+  async findAllForArticle(articleId: number): Promise<CommentWithVotesResponseDto[]> {
+    const comments = await this.prisma.comment.findMany({
       where: {
         articleId,
       },
@@ -19,9 +21,20 @@ export class CommentsService {
         votes: true,
       },
     });
+
+    return comments.map((comment) => ({
+      ...comment,
+      votes: {
+        upvotes: comment.votes.filter((vote) => vote.isUpvote).length,
+        downvotes: comment.votes.filter((vote) => !vote.isUpvote).length,
+        score:
+          comment.votes.filter((vote) => vote.isUpvote).length -
+          comment.votes.filter((vote) => !vote.isUpvote).length,
+      },
+    }));
   }
 
-  async create(dto: CreateCommentDto, userId: number) {
+  async create(dto: CreateCommentDto, userId: number): Promise<CommentResponseDto> {
     return this.prisma.comment.create({
       data: {
         content: dto.content,
@@ -31,7 +44,7 @@ export class CommentsService {
     });
   }
 
-  async update(id: number, dto: UpdateCommentDto, userId: number) {
+  async update(id: number, dto: UpdateCommentDto, userId: number): Promise<CommentResponseDto> {
     const comment = await this.prisma.comment.findUnique({
       where: { id },
     });
@@ -59,7 +72,7 @@ export class CommentsService {
     });
   }
 
-  async remove(id: number, userId: number) {
+  async remove(id: number, userId: number): Promise<CommentResponseDto> {
     const comment = await this.prisma.comment.findUnique({
       where: { id },
     });

@@ -19,6 +19,7 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { CommentResponseDto } from './dto/comment-response.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { CommentWithVotesResponseDto } from './dto/comment-with-votes-response.dto';
 
 @Controller('comments')
 export class CommentsController {
@@ -32,8 +33,10 @@ export class CommentsController {
     example: 1,
     description: 'Id of the article',
   })
-  @ApiResponse({ status: HttpStatus.OK, type: [CommentResponseDto] })
-  async findAllForArticle(@Param('articleId') articleId: number) {
+  @ApiResponse({ status: HttpStatus.OK, type: [CommentWithVotesResponseDto] })
+  async findAllForArticle(
+    @Param('articleId') articleId: number,
+  ): Promise<CommentWithVotesResponseDto[]> {
     return this.commentsService.findAllForArticle(articleId);
   }
 
@@ -47,7 +50,10 @@ export class CommentsController {
     description: 'Returns the created comment',
     type: CommentResponseDto,
   })
-  async create(@Body() dto: CreateCommentDto, @Req() req: RequestWithUser) {
+  async create(
+    @Body() dto: CreateCommentDto,
+    @Req() req: RequestWithUser,
+  ): Promise<CommentResponseDto> {
     return this.commentsService.create(dto, req.user.userId);
   }
 
@@ -72,7 +78,7 @@ export class CommentsController {
     @Param('id') id: number,
     @Body() dto: UpdateCommentDto,
     @Req() req: RequestWithUser,
-  ) {
+  ): Promise<CommentResponseDto> {
     return this.commentsService.update(id, dto, req.user.userId);
   }
 
@@ -88,7 +94,7 @@ export class CommentsController {
     description: 'Id of the comment',
   })
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
-  async remove(@Param('id') id: number, @Req() req: RequestWithUser) {
-    await this.commentsService.remove(id, req.user.userId);
+  async remove(@Param('id') id: number, @Req() req: RequestWithUser): Promise<CommentResponseDto> {
+    return this.commentsService.remove(id, req.user.userId);
   }
 }

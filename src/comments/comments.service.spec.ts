@@ -37,6 +37,16 @@ describe('CommentsService', () => {
           votes: [{ id: 1, isUpvote: false, ipAddress: '192.168.0.1' }],
         },
       ];
+      const mockCommentWithVotes = comments.map((comment) => ({
+        ...comment,
+        votes: {
+          upvotes: comment.votes.filter((vote) => vote.isUpvote).length,
+          downvotes: comment.votes.filter((vote) => !vote.isUpvote).length,
+          score:
+            comment.votes.filter((vote) => vote.isUpvote).length -
+            comment.votes.filter((vote) => !vote.isUpvote).length,
+        },
+      }));
       mockPrisma.comment.findMany.mockResolvedValue(comments);
 
       const result = await service.findAllForArticle(1);
@@ -47,7 +57,7 @@ describe('CommentsService', () => {
           votes: true,
         },
       });
-      expect(result).toBe(comments);
+      expect(result).toStrictEqual(mockCommentWithVotes);
     });
   });
 
