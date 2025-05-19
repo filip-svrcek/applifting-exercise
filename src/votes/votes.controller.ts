@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Get, Param, HttpCode, HttpStatus, Req } from '@nestjs/common';
 import { VotesService } from './votes.service';
 import { CreateVoteDto } from './dto/create-vote.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { VoteResponseDto } from './dto/vote-response.dto';
 import { getClientIp } from 'src/common/req/get-client-ip';
 import { Request } from 'express';
@@ -21,6 +21,12 @@ export class VotesController {
   }
 
   @Get('comment/:commentId')
+  @ApiParam({
+    name: 'commentId',
+    type: Number,
+    example: 1,
+    description: 'Id of the comment',
+  })
   @ApiOperation({ summary: 'Gets vote counts for a comment' })
   @ApiResponse({ status: HttpStatus.OK, type: VoteResponseDto })
   async countVotes(@Param('commentId') commentId: number): Promise<VoteResponseDto> {
