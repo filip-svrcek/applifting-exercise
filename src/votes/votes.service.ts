@@ -13,7 +13,6 @@ export class VotesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: CreateVoteInput) {
-    console.log('dto.ipAddress', dto.ipAddress);
     try {
       return await this.prisma.vote.create({
         data: {
