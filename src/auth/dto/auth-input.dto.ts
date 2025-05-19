@@ -9,6 +9,6 @@ export class AuthInputDto {
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: 'password', description: 'The password of the user' })
+  @ApiProperty({ example: 'passworda', description: 'The password of the user' })
   password: string;
 }
