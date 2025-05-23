@@ -8,9 +8,9 @@ import { AuthResponseDto } from './dto/auth-response.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('login')
   @ApiOperation({ summary: 'User sign in' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Returns token', type: AuthResponseDto })
+  @Post('login')
   async login(@Body() authInput: AuthInputDto) {
     return this.authService.authenticate(authInput);
   }

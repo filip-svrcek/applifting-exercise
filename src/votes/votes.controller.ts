@@ -10,25 +10,25 @@ import { Request } from 'express';
 export class VotesController {
   constructor(private readonly votesService: VotesService) {}
 
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Casts a vote for a comment (up or down)' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Vote created' })
+  @HttpCode(HttpStatus.CREATED)
+  @Post()
   async create(@Body() dto: CreateVoteDto, @Req() req: Request & { ip: string }) {
     const ipAddress = getClientIp(req);
 
     return this.votesService.create({ ...dto, ipAddress });
   }
 
-  @Get('comment/:commentId')
+  @ApiOperation({ summary: 'Gets vote counts for a comment' })
   @ApiParam({
     name: 'commentId',
     type: Number,
     example: 1,
     description: 'Id of the comment',
   })
-  @ApiOperation({ summary: 'Gets vote counts for a comment' })
   @ApiResponse({ status: HttpStatus.OK, type: VoteResponseDto })
+  @Get('comment/:commentId')
   async countVotes(@Param('commentId') commentId: number): Promise<VoteResponseDto> {
     return this.votesService.countVotes(commentId);
   }

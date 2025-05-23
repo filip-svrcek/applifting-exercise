@@ -3,6 +3,8 @@ import eslint from '@eslint/js';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
+import * as espree from 'espree';
+import decoratorOrderRule from './eslint-rules/decorator-order.mjs';
 
 export default tseslint.config(
   {
@@ -25,7 +27,15 @@ export default tseslint.config(
     },
   },
   {
+    plugins: {
+      'custom-rules': {
+        rules: {
+          'decorator-order': decoratorOrderRule,
+        },
+      },
+    },
     rules: {
+      'custom-rules/decorator-order': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
@@ -35,6 +45,13 @@ export default tseslint.config(
           endOfLine: 'auto',
         },
       ],
+    },
+  },
+  {
+    files: ['eslint-rules/**/*.mjs'],
+    languageOptions: {
+      parser: espree,
+      sourceType: 'module',
     },
   },
 );

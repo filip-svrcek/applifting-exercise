@@ -13,7 +13,7 @@ export class CreateCommentDto {
     example: 'This is a comment.',
     description: 'Text content of the comment',
   })
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   content: string;
 }

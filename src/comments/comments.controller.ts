@@ -25,7 +25,6 @@ import { CommentWithVotesResponseDto } from './dto/comment-with-votes-response.d
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
-  @Get('article/:articleId')
   @ApiOperation({ summary: 'Gets all comments for a specific article' })
   @ApiParam({
     name: 'articleId',
@@ -34,15 +33,13 @@ export class CommentsController {
     description: 'Id of the article',
   })
   @ApiResponse({ status: HttpStatus.OK, type: [CommentWithVotesResponseDto] })
+  @Get('article/:articleId')
   async findAllForArticle(
     @Param('articleId') articleId: number,
   ): Promise<CommentWithVotesResponseDto[]> {
     return this.commentsService.findAllForArticle(articleId);
   }
 
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Creates a new comment to an article' })
   @ApiResponse({
@@ -50,6 +47,9 @@ export class CommentsController {
     description: 'Returns the created comment',
     type: CommentResponseDto,
   })
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.CREATED)
+  @Post()
   async create(
     @Body() dto: CreateCommentDto,
     @Req() req: RequestWithUser,
@@ -57,8 +57,6 @@ export class CommentsController {
     return this.commentsService.create(dto, req.user.userId);
   }
 
-  @Put(':id')
-  @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Updates a comment if created less than a minute ago or had not been deleted',
@@ -74,6 +72,8 @@ export class CommentsController {
     description: 'Returns the updated comment',
     type: CommentResponseDto,
   })
+  @UseGuards(AuthGuard)
+  @Put(':id')
   async update(
     @Param('id') id: number,
     @Body() dto: UpdateCommentDto,
@@ -82,9 +82,6 @@ export class CommentsController {
     return this.commentsService.update(id, dto, req.user.userId);
   }
 
-  @Delete(':id')
-  @UseGuards(AuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Deletes the original content of a comment' })
   @ApiParam({
@@ -94,6 +91,9 @@ export class CommentsController {
     description: 'Id of the comment',
   })
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete(':id')
   async remove(@Param('id') id: number, @Req() req: RequestWithUser): Promise<CommentResponseDto> {
     return this.commentsService.remove(id, req.user.userId);
   }
