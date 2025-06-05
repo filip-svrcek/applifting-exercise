@@ -29,10 +29,7 @@ A simple single-user blogging engine built with **NestJS**, **Prisma**, and **Po
 - ✅ e2e and unit tests using Jest
 - ✅ Code linting and formatting
 - ✅ Dockerized app and services
-
-## 🔧 Not Implemented (time constraints)
-
-- ❌ GraphQL API
+- ✅ GraphQL API
 
 ## 🧪 Running the App
 
