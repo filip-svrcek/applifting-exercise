@@ -59,7 +59,7 @@ export class CommentsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    summary: 'Updates a comment if created less than a minute ago or had not been deleted',
+    summary: 'Updates a comment if created less than a minute ago and had not been deleted',
   })
   @ApiParam({
     name: 'id',
