@@ -1,3 +1,17 @@
 # ------------------------------------------------------
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
+
+type Auth {
+  accessToken: String!
+}
+
+type Mutation {
+  login(data: AuthInput!): Auth!
+  createArticle(data: CreateArticleInput!): Article!
+}
+
+input AuthInput {
+  login: String!
+  password: String!
+}
