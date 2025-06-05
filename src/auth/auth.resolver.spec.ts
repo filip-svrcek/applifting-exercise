@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthResolver } from './auth.resolver';
 import { AuthService } from './auth.service';
-import { Auth } from './entities/auth.entity';
+
 import { AuthInputDto } from './dto/auth-input.dto';
+import { AuthResponseDto } from './dto/auth-response.dto';
 
 describe('AuthResolver', () => {
   let resolver: AuthResolver;
@@ -32,7 +33,7 @@ describe('AuthResolver', () => {
   describe('login', () => {
     it('should call AuthService.authenticate and return Auth', async () => {
       const input: AuthInputDto = { login: 'alice', password: 'passworda' };
-      const result: Auth = { accessToken: 'token123' };
+      const result: AuthResponseDto = { accessToken: 'token123' };
       jest.spyOn(authService, 'authenticate').mockResolvedValue(result);
 
       const response = await resolver.login(input);
