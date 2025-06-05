@@ -20,13 +20,42 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type CommentResponseDto {
+  id: Float!
+  content: String!
+  authorId: Float!
+  articleId: Float!
+  createdAt: DateTime!
+  isDeleted: Boolean!
+}
+
+type VoteResponseDto {
+  upvotes: Float!
+  downvotes: Float!
+  score: Float!
+}
+
+type CommentWithVotesResponseDto {
+  id: Float!
+  content: String!
+  authorId: Float!
+  articleId: Float!
+  createdAt: DateTime!
+  isDeleted: Boolean!
+  votes: VoteResponseDto!
+}
+
 type Query {
   articles: [ArticleResponseDto!]!
+  commentsForArticle(articleId: Int!): [CommentWithVotesResponseDto!]!
 }
 
 type Mutation {
   login(data: AuthInputDto!): AuthResponseDto!
   createArticle(data: CreateArticleDto!): ArticleResponseDto!
+  createComment(data: CreateCommentDto!): CommentResponseDto!
+  updateComment(id: Int!, data: UpdateCommentDto!): CommentResponseDto!
+  removeComment(id: Int!): CommentResponseDto!
 }
 
 input AuthInputDto {
@@ -37,5 +66,14 @@ input AuthInputDto {
 input CreateArticleDto {
   title: String!
   perex: String!
+  content: String!
+}
+
+input CreateCommentDto {
+  articleId: Float!
+  content: String!
+}
+
+input UpdateCommentDto {
   content: String!
 }
