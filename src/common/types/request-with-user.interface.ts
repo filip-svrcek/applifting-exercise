@@ -1,8 +1,10 @@
 import { Request } from 'express';
 
+export interface UserPayload {
+  userId: number;
+  login: string;
+}
+
 export interface RequestWithUser extends Request {
-  user: {
-    userId: number;
-    login: string;
-  };
+  user: UserPayload;
 }
