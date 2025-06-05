@@ -25,11 +25,11 @@ type Query {
 }
 
 type Mutation {
-  login(data: AuthInput!): Auth!
+  login(data: AuthInputDto!): Auth!
   createArticle(data: CreateArticleDto!): Article!
 }
 
-input AuthInput {
+input AuthInputDto {
   login: String!
   password: String!
 }
