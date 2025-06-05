@@ -57,6 +57,27 @@ const PRIORITY = [
   'Transform',
   'Type',
 
+  // @nestjs/graphql
+  'Args',
+  'ArgsType',
+  'Context',
+  'Directive',
+  'Field',
+  'GraphQLISODateTime',
+  'ID',
+  'Info',
+  'InputType',
+  'Int',
+  'InterfaceType',
+  'Mutation',
+  'ObjectType',
+  'Parent',
+  'Query',
+  'ResolveField',
+  'Resolver',
+  'Root',
+  'Subscription',
+
   // nest features
   'HttpCode',
   'Redirect',
