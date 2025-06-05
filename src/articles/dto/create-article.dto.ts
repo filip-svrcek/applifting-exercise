@@ -1,11 +1,14 @@
+import { Field, InputType } from '@nestjs/graphql';
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
+@InputType()
 export class CreateArticleDto {
   @ApiProperty({ example: 'Lorem Ipsum', description: 'Title of the article' })
   @IsNotEmpty()
   @IsString()
   @MinLength(5)
+  @Field()
   title: string;
 
   @ApiProperty({
@@ -14,6 +17,7 @@ export class CreateArticleDto {
   })
   @IsNotEmpty()
   @IsString()
+  @Field()
   perex: string;
 
   @ApiProperty({
@@ -23,5 +27,6 @@ export class CreateArticleDto {
   })
   @IsNotEmpty()
   @IsString()
+  @Field()
   content: string;
 }
