@@ -1,24 +1,27 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateVoteDto } from './dto/create-vote.dto';
 import { VoteResponseDto } from './dto/vote-response.dto';
 import { isPrismaError } from 'src/common/errors/prisma-error.utils';
-
-interface CreateVoteInput extends CreateVoteDto {
-  ipAddress: string;
-}
+import { CreateVoteDto } from './dto/create-vote.dto';
+import { CreateVoteResponseDto } from './dto/create-vote-response.dto';
 
 @Injectable()
 export class VotesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreateVoteInput) {
+  async create(dto: CreateVoteDto, ipAddress: string): Promise<CreateVoteResponseDto> {
     try {
       return await this.prisma.vote.create({
         data: {
           commentId: dto.commentId,
-          ipAddress: dto.ipAddress,
+          ipAddress,
           isUpvote: dto.isUpvote,
+        },
+        select: {
+          id: true,
+          commentId: true,
+          ipAddress: true,
+          isUpvote: true,
         },
       });
     } catch (error) {

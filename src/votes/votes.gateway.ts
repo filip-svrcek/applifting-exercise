@@ -64,10 +64,7 @@ export class VotesGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.handshake.address;
 
     try {
-      const createdVote = await this.votesService.create({
-        ...dto,
-        ipAddress,
-      });
+      const createdVote = await this.votesService.create(dto, ipAddress);
 
       const { commentId, isUpvote } = createdVote;
 

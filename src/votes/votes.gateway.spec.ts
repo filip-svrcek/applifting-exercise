@@ -102,10 +102,7 @@ describe('VotesGateway', () => {
 
       await gateway.handleVoteComment(mockVoteDto, mockClient);
 
-      expect(votesService.create).toHaveBeenCalledWith({
-        ...mockVoteDto,
-        ipAddress: '127.0.0.1',
-      });
+      expect(votesService.create).toHaveBeenCalledWith(mockVoteDto, '127.0.0.1');
       expect(gateway.server.emit).toHaveBeenCalledWith('commentVoted', {
         commentId: 1,
         isUpvote: true,

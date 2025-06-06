@@ -5,6 +5,26 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 import { CommentWithVotesResponseDto } from './dto/comment-with-votes-response.dto';
 import { CommentResponseDto } from './dto/comment-response.dto';
 
+const defaultVotesSelect = {
+  isUpvote: true,
+};
+
+const defaultCommentSelect = {
+  id: true,
+  content: true,
+  createdAt: true,
+  articleId: true,
+  authorId: true,
+  isDeleted: true,
+};
+
+const defaultSelectWithVotes = {
+  ...defaultCommentSelect,
+  votes: {
+    select: defaultVotesSelect,
+  },
+};
+
 @Injectable()
 export class CommentsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -17,9 +37,7 @@ export class CommentsService {
       orderBy: {
         createdAt: 'desc',
       },
-      include: {
-        votes: true,
-      },
+      select: defaultSelectWithVotes,
     });
 
     return comments.map((comment) => ({
@@ -41,12 +59,14 @@ export class CommentsService {
         articleId: dto.articleId,
         authorId: userId,
       },
+      select: defaultCommentSelect,
     });
   }
 
   async update(id: number, dto: UpdateCommentDto, userId: number): Promise<CommentResponseDto> {
     const comment = await this.prisma.comment.findUnique({
       where: { id },
+      select: defaultCommentSelect,
     });
 
     if (!comment) {
@@ -69,12 +89,16 @@ export class CommentsService {
       data: {
         content: dto.content,
       },
+      select: defaultCommentSelect,
     });
   }
 
   async remove(id: number, userId: number): Promise<CommentResponseDto> {
     const comment = await this.prisma.comment.findUnique({
       where: { id },
+      select: {
+        authorId: true,
+      },
     });
 
     if (!comment) {
@@ -91,6 +115,7 @@ export class CommentsService {
         content: 'This comment has been deleted by the author',
         isDeleted: true,
       },
+      select: defaultCommentSelect,
     });
   }
 }

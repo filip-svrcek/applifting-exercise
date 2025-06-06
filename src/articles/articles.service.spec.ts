@@ -69,7 +69,7 @@ describe('ArticlesService', () => {
         perex: 'Leading parahraph',
         content: 'Content',
       };
-      const article = { id: 1, ...dto };
+      const article = { id: 1, createdAt: Date(), updatedAt: Date(), ...dto };
       mockPrisma.article.create.mockResolvedValue(article);
 
       const result = await service.create(dto, 123);
@@ -78,6 +78,14 @@ describe('ArticlesService', () => {
         data: {
           ...dto,
           authorId: 123,
+        },
+        select: {
+          id: true,
+          title: true,
+          perex: true,
+          content: true,
+          createdAt: true,
+          updatedAt: true,
         },
       });
     });

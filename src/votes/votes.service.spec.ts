@@ -30,27 +30,33 @@ describe('VotesService', () => {
     it('should create a vote', async () => {
       const dto = {
         commentId: 1,
-        ipAddress: '127.0.0.1',
         isUpvote: true,
       };
+      const ipAddress = '127.0.0.1';
 
-      const createdVote = { id: 1, ...dto };
+      const createdVote = { id: 1, ipAddress, ...dto };
 
       mockPrisma.vote.create.mockResolvedValue(createdVote);
 
-      const result = await service.create(dto);
+      const result = await service.create(dto, ipAddress);
       expect(result).toEqual(createdVote);
       expect(mockPrisma.vote.create).toHaveBeenCalledWith({
-        data: dto,
+        data: { ...dto, ipAddress },
+        select: {
+          id: true,
+          commentId: true,
+          ipAddress: true,
+          isUpvote: true,
+        },
       });
     });
 
     it('should throw ConflictException on duplicate vote (P2002)', async () => {
       const dto = {
         commentId: 1,
-        ipAddress: '127.0.0.1',
         isUpvote: true,
       };
+      const ipAddress = '127.0.0.1';
 
       const error = new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
         code: 'P2002',
@@ -59,20 +65,20 @@ describe('VotesService', () => {
 
       mockPrisma.vote.create.mockRejectedValue(error);
 
-      await expect(service.create(dto)).rejects.toThrow(ConflictException);
+      await expect(service.create(dto, ipAddress)).rejects.toThrow(ConflictException);
     });
 
     it('should rethrow unknown errors', async () => {
       const dto = {
         commentId: 1,
-        ipAddress: '127.0.0.1',
         isUpvote: true,
       };
+      const ipAddress = '127.0.0.1';
 
       const error = new Error('Unexpected DB error');
       mockPrisma.vote.create.mockRejectedValue(error);
 
-      await expect(service.create(dto)).rejects.toThrow('Unexpected DB error');
+      await expect(service.create(dto, ipAddress)).rejects.toThrow('Unexpected DB error');
     });
   });
 

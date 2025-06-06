@@ -34,9 +34,9 @@ describe('VotesController', () => {
     it('should create a vote and return result from service', async () => {
       const dto = {
         commentId: 1,
-        ipAddress: '192.168.0.1',
         isUpvote: true,
       };
+      const ipAddress = '192.168.0.1';
 
       const createdVote = {
         id: 1,
@@ -51,7 +51,7 @@ describe('VotesController', () => {
 
       const result = await controller.create(dto, req);
       expect(result).toEqual(createdVote);
-      expect(mockVotesService.create).toHaveBeenCalledWith(dto);
+      expect(mockVotesService.create).toHaveBeenCalledWith(dto, ipAddress);
     });
   });
 

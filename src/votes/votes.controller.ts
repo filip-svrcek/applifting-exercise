@@ -5,6 +5,7 @@ import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { VoteResponseDto } from './dto/vote-response.dto';
 import { getClientIp } from 'src/common/req/get-client-ip';
 import { Request } from 'express';
+import { CreateVoteResponseDto } from './dto/create-vote-response.dto';
 
 @Controller('votes')
 export class VotesController {
@@ -14,10 +15,13 @@ export class VotesController {
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Vote created' })
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  async create(@Body() dto: CreateVoteDto, @Req() req: Request & { ip: string }) {
+  async create(
+    @Body() dto: CreateVoteDto,
+    @Req() req: Request & { ip: string },
+  ): Promise<CreateVoteResponseDto> {
     const ipAddress = getClientIp(req);
 
-    return this.votesService.create({ ...dto, ipAddress });
+    return this.votesService.create(dto, ipAddress);
   }
 
   @ApiOperation({ summary: 'Gets vote counts for a comment' })

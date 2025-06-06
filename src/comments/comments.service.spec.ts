@@ -53,8 +53,18 @@ describe('CommentsService', () => {
       expect(mockPrisma.comment.findMany).toHaveBeenCalledWith({
         where: { articleId: 1 },
         orderBy: { createdAt: 'desc' },
-        include: {
-          votes: true,
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          articleId: true,
+          authorId: true,
+          isDeleted: true,
+          votes: {
+            select: {
+              isUpvote: true,
+            },
+          },
         },
       });
       expect(result).toStrictEqual(mockCommentWithVotes);
@@ -73,6 +83,14 @@ describe('CommentsService', () => {
           content: dto.content,
           articleId: dto.articleId,
           authorId: 123,
+        },
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          articleId: true,
+          authorId: true,
+          isDeleted: true,
         },
       });
       expect(result).toBe(createdComment);
@@ -95,10 +113,28 @@ describe('CommentsService', () => {
       mockPrisma.comment.update.mockResolvedValue(updatedComment);
 
       const result = await service.update(1, dto, 123);
-      expect(mockPrisma.comment.findUnique).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(mockPrisma.comment.findUnique).toHaveBeenCalledWith({
+        where: { id: 1 },
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          articleId: true,
+          authorId: true,
+          isDeleted: true,
+        },
+      });
       expect(mockPrisma.comment.update).toHaveBeenCalledWith({
         where: { id: 1 },
         data: { content: dto.content },
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          articleId: true,
+          authorId: true,
+          isDeleted: true,
+        },
       });
       expect(result).toBe(updatedComment);
     });
@@ -152,11 +188,24 @@ describe('CommentsService', () => {
 
       await service.remove(1, 123);
 
-      expect(mockPrisma.comment.findUnique).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(mockPrisma.comment.findUnique).toHaveBeenCalledWith({
+        where: { id: 1 },
+        select: {
+          authorId: true,
+        },
+      });
       expect(mockPrisma.comment.update).toHaveBeenCalledWith({
         where: { id: 1 },
         data: {
           content: 'This comment has been deleted by the author',
+          isDeleted: true,
+        },
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          articleId: true,
+          authorId: true,
           isDeleted: true,
         },
       });
