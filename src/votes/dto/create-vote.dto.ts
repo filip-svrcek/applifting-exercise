@@ -1,8 +1,9 @@
 import { IsBoolean, IsInt } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 
 @InputType()
+@ObjectType()
 export class CreateVoteDto {
   @ApiProperty({ example: 1, description: 'Id of the comment' })
   @IsInt()

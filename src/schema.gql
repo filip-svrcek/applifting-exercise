@@ -46,6 +46,8 @@ type CommentWithVotesResponseDto {
 }
 
 type CreateVoteResponseDto {
+  commentId: Float!
+  isUpvote: Boolean!
   id: Float!
   ipAddress: String!
 }
