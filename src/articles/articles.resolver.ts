@@ -15,6 +15,11 @@ export class ArticlesResolver {
     return this.articlesService.findAll();
   }
 
+  @Query(() => ArticleResponseDto)
+  async article(@Args('id') id: number): Promise<ArticleResponseDto> {
+    return this.articlesService.findOne(id);
+  }
+
   @UseGuards(GqlAuthGuard)
   @Mutation(() => ArticleResponseDto)
   async createArticle(
@@ -23,5 +28,26 @@ export class ArticlesResolver {
   ): Promise<ArticleResponseDto> {
     const userId = context.req.user.userId;
     return this.articlesService.create(data, userId);
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => ArticleResponseDto)
+  async updateArticle(
+    @Args('id') id: number,
+    @Args('data') data: CreateArticleDto,
+    @Context() context: { req: RequestWithUser },
+  ): Promise<ArticleResponseDto> {
+    const userId = context.req.user.userId;
+    return this.articlesService.update(id, data, userId);
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => ArticleResponseDto)
+  async removeArticle(
+    @Args('id') id: number,
+    @Context() context: { req: RequestWithUser },
+  ): Promise<void> {
+    const userId = context.req.user.userId;
+    await this.articlesService.remove(id, userId);
   }
 }

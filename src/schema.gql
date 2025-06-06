@@ -47,12 +47,15 @@ type CommentWithVotesResponseDto {
 
 type Query {
   articles: [ArticleResponseDto!]!
+  article(id: Float!): ArticleResponseDto!
   commentsForArticle(articleId: Int!): [CommentWithVotesResponseDto!]!
 }
 
 type Mutation {
   login(data: AuthInputDto!): AuthResponseDto!
   createArticle(data: CreateArticleDto!): ArticleResponseDto!
+  updateArticle(id: Float!, data: CreateArticleDto!): ArticleResponseDto!
+  removeArticle(id: Float!): ArticleResponseDto!
   createComment(data: CreateCommentDto!): CommentResponseDto!
   updateComment(id: Int!, data: UpdateCommentDto!): CommentResponseDto!
   removeComment(id: Int!): CommentResponseDto!
