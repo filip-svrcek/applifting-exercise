@@ -1,53 +1,22 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import * as request from 'supertest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { PrismaService } from '../src/prisma/prisma.service';
-import { AppModule } from '../src/app.module';
-import * as bcrypt from 'bcrypt';
 
-describe('Articles (e2e)', () => {
-  let app: INestApplication;
-  let prisma: PrismaService;
+const API_URL = 'http://localhost:3000';
+
+describe('Articles (e2e, Docker)', () => {
   let jwt: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe());
-    await app.init();
-
-    prisma = app.get(PrismaService);
-
-    const password = await bcrypt.hash('test123', 10);
-    const user = await prisma.user.create({
-      data: {
-        login: 'borivoj',
-        password,
-      },
-    });
-
-    const res = await request(app.getHttpServer())
+    const res = await request(API_URL)
       .post('/auth/login')
-      .send({ login: user.login, password: 'test123' });
-    const { accessToken } = res.body as { accessToken: string };
-    jwt = accessToken;
-  });
+      .send({ login: 'alice', password: 'passworda' });
 
-  afterAll(async () => {
-    await prisma.vote.deleteMany();
-    await prisma.comment.deleteMany();
-    await prisma.article.deleteMany();
-    await prisma.user.deleteMany();
-    await app.close();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    jwt = res.body.accessToken;
   });
 
   it('/articles (POST)', async () => {
-    const res = await request(app.getHttpServer())
+    const res = await request(API_URL)
       .post('/articles')
       .set('Authorization', `Bearer ${jwt}`)
       .send({
@@ -62,7 +31,7 @@ describe('Articles (e2e)', () => {
   });
 
   it('/articles (GET)', async () => {
-    const res = await request(app.getHttpServer()).get('/articles').expect(200);
+    const res = await request(API_URL).get('/articles').expect(200);
 
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body[0]).toHaveProperty('title');
