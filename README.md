@@ -45,26 +45,18 @@ A simple single-user blogging engine built with **NestJS**, **Prisma**, and **Po
 # Install dependencies
 yarn install
 
-# Copy env config
+# Copy env config and set variables values
 cp .env.example .env
 
 ```
 
-### 🐳 Run Docker
+### 🐳🧑‍💻 Run in Development
 
 ```bash
-# Build, start and seed database
-yarn start:db
-yarn migrate
-yarn seed
-```
-
-### 🧑‍💻 Run in Development
-
-Make sure PostgreSQL is running locally (or via Docker), and `.env` is configured correctly:
-
-```bash
-yarn start:dev
+# Build and Run Docker container that contains db, prisma-studio and the app
+yarn docker:up
+# Run first time around
+yarn docker:seed
 ```
 
 ### 🧪 Run Tests
@@ -75,10 +67,14 @@ yarn test
 yarn test:e2e # not exhaustive coverage, just a showcase
 ```
 
-## 📘 API Documentation
+## 📘 API Documentation and tools
 
 - REST API is available at:  
   **`/api`** → Swagger UI
+- GraphQL Playground is availabe at:
+  **`/graphql`**
+- Prisma Studio is available at:  
+  **[http://localhost:5555](http://localhost:5555)**
 
 ## 📂 Seeded User
 
