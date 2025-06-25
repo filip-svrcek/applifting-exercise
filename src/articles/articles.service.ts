@@ -1,33 +1,18 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { ArticlesRepository } from './articles.repository';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { ArticleResponseDto } from './dto/article-response.dto';
 
-const defaultSelect = {
-  id: true,
-  title: true,
-  perex: true,
-  content: true,
-  createdAt: true,
-  updatedAt: true,
-};
-
 @Injectable()
 export class ArticlesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly articlesRepository: ArticlesRepository) {}
 
   async findAll(): Promise<ArticleResponseDto[]> {
-    return this.prisma.article.findMany({
-      orderBy: { createdAt: 'desc' },
-      select: defaultSelect,
-    });
+    return this.articlesRepository.findAll();
   }
 
   async findOne(id: number): Promise<ArticleResponseDto> {
-    const article = await this.prisma.article.findUnique({
-      where: { id },
-      select: defaultSelect,
-    });
+    const article = await this.articlesRepository.findById(id);
 
     if (!article) {
       throw new NotFoundException(`Article with id ${id} not found`);
@@ -37,17 +22,11 @@ export class ArticlesService {
   }
 
   create(dto: CreateArticleDto, authorId: number): Promise<ArticleResponseDto> {
-    return this.prisma.article.create({
-      data: {
-        ...dto,
-        authorId,
-      },
-      select: defaultSelect,
-    });
+    return this.articlesRepository.create(dto, authorId);
   }
 
   async update(id: number, dto: CreateArticleDto, userId: number): Promise<ArticleResponseDto> {
-    const existing = await this.prisma.article.findUnique({ where: { id } });
+    const existing = await this.articlesRepository.findById(id);
 
     if (!existing) {
       throw new NotFoundException(`Article with id ${id} not found`);
@@ -57,15 +36,11 @@ export class ArticlesService {
       throw new ForbiddenException('You are not the author of this article');
     }
 
-    return this.prisma.article.update({
-      where: { id },
-      data: { ...dto },
-      select: defaultSelect,
-    });
+    return this.articlesRepository.update(id, dto);
   }
 
   async remove(id: number, userId: number): Promise<void> {
-    const article = await this.prisma.article.findUnique({ where: { id } });
+    const article = await this.articlesRepository.findById(id);
 
     if (!article) {
       throw new NotFoundException(`Article with id ${id} not found`);
@@ -75,6 +50,6 @@ export class ArticlesService {
       throw new ForbiddenException('You are not the author of this article');
     }
 
-    await this.prisma.article.delete({ where: { id } });
+    await this.articlesRepository.delete(id);
   }
 }

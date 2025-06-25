@@ -1,15 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { UsersRepository } from './users.repository';
 
 describe('UsersService', () => {
   let service: UsersService;
-  let prismaService: PrismaService;
+  let usersRepository: UsersRepository;
 
-  const mockPrismaService = {
-    user: {
-      findUnique: jest.fn(),
-    },
+  const mockUsersRepository = {
+    findByLogin: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -17,29 +15,27 @@ describe('UsersService', () => {
       providers: [
         UsersService,
         {
-          provide: PrismaService,
-          useValue: mockPrismaService,
+          provide: UsersRepository,
+          useValue: mockUsersRepository,
         },
       ],
     }).compile();
 
     service = module.get<UsersService>(UsersService);
-    prismaService = module.get<PrismaService>(PrismaService);
+    usersRepository = module.get<UsersRepository>(UsersRepository);
   });
 
   describe('findUserByLogin', () => {
-    it('should call prisma.user.findUnique with correct parameters', async () => {
+    it('should call usersRepository.findByLogin with correct parameters', async () => {
       const login = 'testUser';
       const mockUser = { id: 1, login: 'testUser' };
 
-      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
+      mockUsersRepository.findByLogin.mockResolvedValue(mockUser);
 
       const result = await service.findUserByLogin(login);
 
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-        where: { login },
-      });
+      expect(usersRepository.findByLogin).toHaveBeenCalledWith(login);
       expect(result).toEqual(mockUser);
     });
   });

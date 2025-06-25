@@ -1,25 +1,30 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { CommentsRepository } from './comments.repository';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 
 describe('CommentsService', () => {
   let service: CommentsService;
 
-  const mockPrisma = {
-    comment: {
-      findMany: jest.fn(),
-      create: jest.fn(),
-      findUnique: jest.fn(),
-      update: jest.fn(),
-    },
+  const mockCommentsRepository = {
+    findAllForArticle: jest.fn(),
+    create: jest.fn(),
+    findById: jest.fn(),
+    update: jest.fn(),
+    softDelete: jest.fn(),
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [CommentsService, { provide: PrismaService, useValue: mockPrisma }],
+      providers: [
+        CommentsService,
+        {
+          provide: CommentsRepository,
+          useValue: mockCommentsRepository,
+        },
+      ],
     }).compile();
 
     service = module.get<CommentsService>(CommentsService);
@@ -34,40 +39,16 @@ describe('CommentsService', () => {
           id: 1,
           content: 'test',
           articleId: 1,
-          votes: [{ id: 1, isUpvote: false, ipAddress: '192.168.0.1' }],
+          votes: [{ isUpvote: false }, { isUpvote: true }],
         },
       ];
-      const mockCommentWithVotes = comments.map((comment) => ({
-        ...comment,
-        votes: {
-          upvotes: comment.votes.filter((vote) => vote.isUpvote).length,
-          downvotes: comment.votes.filter((vote) => !vote.isUpvote).length,
-          score:
-            comment.votes.filter((vote) => vote.isUpvote).length -
-            comment.votes.filter((vote) => !vote.isUpvote).length,
-        },
-      }));
-      mockPrisma.comment.findMany.mockResolvedValue(comments);
+      mockCommentsRepository.findAllForArticle.mockResolvedValue(comments);
 
       const result = await service.findAllForArticle(1);
-      expect(mockPrisma.comment.findMany).toHaveBeenCalledWith({
-        where: { articleId: 1 },
-        orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          content: true,
-          createdAt: true,
-          articleId: true,
-          authorId: true,
-          isDeleted: true,
-          votes: {
-            select: {
-              isUpvote: true,
-            },
-          },
-        },
-      });
-      expect(result).toStrictEqual(mockCommentWithVotes);
+      expect(mockCommentsRepository.findAllForArticle).toHaveBeenCalledWith(1);
+      expect(result[0].votes.upvotes).toBe(1);
+      expect(result[0].votes.downvotes).toBe(1);
+      expect(result[0].votes.score).toBe(0);
     });
   });
 
@@ -75,24 +56,10 @@ describe('CommentsService', () => {
     it('should create and return a comment', async () => {
       const dto: CreateCommentDto = { content: 'new comment', articleId: 1 };
       const createdComment = { id: 1, ...dto, authorId: 123 };
-      mockPrisma.comment.create.mockResolvedValue(createdComment);
+      mockCommentsRepository.create.mockResolvedValue(createdComment);
 
       const result = await service.create(dto, 123);
-      expect(mockPrisma.comment.create).toHaveBeenCalledWith({
-        data: {
-          content: dto.content,
-          articleId: dto.articleId,
-          authorId: 123,
-        },
-        select: {
-          id: true,
-          content: true,
-          createdAt: true,
-          articleId: true,
-          authorId: true,
-          isDeleted: true,
-        },
-      });
+      expect(mockCommentsRepository.create).toHaveBeenCalledWith(dto, 123);
       expect(result).toBe(createdComment);
     });
   });
@@ -109,38 +76,17 @@ describe('CommentsService', () => {
         isDeleted: false,
       };
       const updatedComment = { ...comment, content: dto.content };
-      mockPrisma.comment.findUnique.mockResolvedValue(comment);
-      mockPrisma.comment.update.mockResolvedValue(updatedComment);
+      mockCommentsRepository.findById.mockResolvedValue(comment);
+      mockCommentsRepository.update.mockResolvedValue(updatedComment);
 
       const result = await service.update(1, dto, 123);
-      expect(mockPrisma.comment.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
-        select: {
-          id: true,
-          content: true,
-          createdAt: true,
-          articleId: true,
-          authorId: true,
-          isDeleted: true,
-        },
-      });
-      expect(mockPrisma.comment.update).toHaveBeenCalledWith({
-        where: { id: 1 },
-        data: { content: dto.content },
-        select: {
-          id: true,
-          content: true,
-          createdAt: true,
-          articleId: true,
-          authorId: true,
-          isDeleted: true,
-        },
-      });
+      expect(mockCommentsRepository.findById).toHaveBeenCalledWith(1);
+      expect(mockCommentsRepository.update).toHaveBeenCalledWith(1, dto.content);
       expect(result).toBe(updatedComment);
     });
 
     it('should throw NotFoundException if comment not found', async () => {
-      mockPrisma.comment.findUnique.mockResolvedValue(null);
+      mockCommentsRepository.findById.mockResolvedValue(null);
       await expect(service.update(1, dto, 123)).rejects.toThrow(NotFoundException);
     });
 
@@ -152,7 +98,7 @@ describe('CommentsService', () => {
         createdAt: new Date(),
         isDeleted: false,
       };
-      mockPrisma.comment.findUnique.mockResolvedValue(comment);
+      mockCommentsRepository.findById.mockResolvedValue(comment);
 
       await expect(service.update(1, dto, 123)).rejects.toThrow(ForbiddenException);
     });
@@ -165,7 +111,7 @@ describe('CommentsService', () => {
         createdAt: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago
         isDeleted: true,
       };
-      mockPrisma.comment.findUnique.mockResolvedValue(comment);
+      mockCommentsRepository.findById.mockResolvedValue(comment);
 
       await expect(service.update(1, dto, 123)).rejects.toThrow(ForbiddenException);
     });
@@ -179,8 +125,8 @@ describe('CommentsService', () => {
         authorId: 123,
         isDeleted: false,
       };
-      mockPrisma.comment.findUnique.mockResolvedValue(comment);
-      mockPrisma.comment.update.mockResolvedValue({
+      mockCommentsRepository.findById.mockResolvedValue(comment);
+      mockCommentsRepository.softDelete.mockResolvedValue({
         ...comment,
         content: 'This comment has been deleted by the author',
         isDeleted: true,
@@ -188,31 +134,12 @@ describe('CommentsService', () => {
 
       await service.remove(1, 123);
 
-      expect(mockPrisma.comment.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
-        select: {
-          authorId: true,
-        },
-      });
-      expect(mockPrisma.comment.update).toHaveBeenCalledWith({
-        where: { id: 1 },
-        data: {
-          content: 'This comment has been deleted by the author',
-          isDeleted: true,
-        },
-        select: {
-          id: true,
-          content: true,
-          createdAt: true,
-          articleId: true,
-          authorId: true,
-          isDeleted: true,
-        },
-      });
+      expect(mockCommentsRepository.findById).toHaveBeenCalledWith(1);
+      expect(mockCommentsRepository.softDelete).toHaveBeenCalledWith(1);
     });
 
     it('should throw NotFoundException if comment not found', async () => {
-      mockPrisma.comment.findUnique.mockResolvedValue(null);
+      mockCommentsRepository.findById.mockResolvedValue(null);
       await expect(service.remove(1, 123)).rejects.toThrow(NotFoundException);
     });
 
@@ -223,7 +150,7 @@ describe('CommentsService', () => {
         authorId: 999,
         isDeleted: false,
       };
-      mockPrisma.comment.findUnique.mockResolvedValue(comment);
+      mockCommentsRepository.findById.mockResolvedValue(comment);
 
       await expect(service.remove(1, 123)).rejects.toThrow(ForbiddenException);
     });
