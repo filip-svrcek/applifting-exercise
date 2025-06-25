@@ -1,4 +1,14 @@
-import { Controller, Post, Body, Get, Param, HttpCode, HttpStatus, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  HttpCode,
+  HttpStatus,
+  Req,
+  UseFilters,
+} from '@nestjs/common';
 import { VotesService } from './votes.service';
 import { CreateVoteDto } from './dto/create-vote.dto';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
@@ -6,6 +16,7 @@ import { VoteResponseDto } from './dto/vote-response.dto';
 import { getClientIp } from 'src/common/req/get-client-ip';
 import { Request } from 'express';
 import { CreateVoteResponseDto } from './dto/create-vote-response.dto';
+import { AlreadyVotedFilter } from './filters/already-voted.filter';
 
 @Controller('votes')
 export class VotesController {
@@ -13,6 +24,7 @@ export class VotesController {
 
   @ApiOperation({ summary: 'Casts a vote for a comment (up or down)' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Vote created' })
+  @UseFilters(AlreadyVotedFilter)
   @HttpCode(HttpStatus.CREATED)
   @Post()
   async create(

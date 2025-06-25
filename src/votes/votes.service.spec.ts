@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { VotesService } from './votes.service';
 import { VotesRepository } from './votes.repository';
-import { ConflictException } from '@nestjs/common';
+import { AlreadyVotedError } from './errors/already-voted.error';
 
 describe('VotesService', () => {
   let service: VotesService;
@@ -9,6 +9,7 @@ describe('VotesService', () => {
   const mockVotesRepository = {
     createVote: jest.fn(),
     countByType: jest.fn(),
+    hasVoted: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -50,17 +51,17 @@ describe('VotesService', () => {
       });
     });
 
-    it('should throw ConflictException on duplicate vote (P2002)', async () => {
+    it('should throw ConflictException on duplicate vote', async () => {
       const dto = {
         commentId: 1,
         isUpvote: true,
       };
       const ipAddress = '127.0.0.1';
 
-      const error = new ConflictException('This IP has already voted on this comment');
+      const error = new AlreadyVotedError();
       mockVotesRepository.createVote.mockRejectedValue(error);
 
-      await expect(service.create(dto, ipAddress)).rejects.toThrow(ConflictException);
+      await expect(service.create(dto, ipAddress)).rejects.toThrow(AlreadyVotedError);
     });
 
     it('should rethrow unknown errors', async () => {

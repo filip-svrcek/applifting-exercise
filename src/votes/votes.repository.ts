@@ -20,4 +20,12 @@ export class VotesRepository {
   async countByType(commentId: number, isUpvote: boolean) {
     return this.prisma.vote.count({ where: { commentId, isUpvote } });
   }
+
+  async hasVoted(commentId: number, ipAddress: string) {
+    const vote = await this.prisma.vote.findFirst({
+      where: { commentId, ipAddress },
+      select: { id: true },
+    });
+    return !!vote;
+  }
 }
